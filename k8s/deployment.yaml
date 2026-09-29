@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: findee-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: findee-pod
+  template:
+    metadata:
+      labels:
+        app: findee-pod
+    spec:
+      containers:
+        - name: findee-container
+          image: danielkwakye1000/findee:v1
+          ports:
+            - containerPort: 3001
+

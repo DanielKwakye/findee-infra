@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: findee-service
+spec:
+  selector:
+    app: findee-pod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+#    - protocol: TCP
+#      port: 443
+#      targetPort: 3000
+  type: LoadBalancer
