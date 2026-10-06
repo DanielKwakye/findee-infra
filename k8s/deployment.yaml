@@ -14,10 +14,13 @@ spec:
     spec:
       containers:
         - name: findee-container
-          image: danielkwakye1000/findee:v3
+          image: danielkwakye1000/findee:v4
           ports:
             - containerPort: 3002
-          env:
-            - name: PORT
-              value: "3002"
+#          env:
+#            - name: PORT
+#              value: "3002"
+          envFrom:
+            - secretRef:
+                name: findee-env
 
