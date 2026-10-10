@@ -9,11 +9,11 @@ spec:
 
   tls:
     - hosts:
-        - findee.rentmux.com
+        - findmus.com
       secretName: findee-tls
 
   rules:
-    - host: findee.rentmux.com
+    - host: findmus.com
       http:
         paths:
           - path: /
