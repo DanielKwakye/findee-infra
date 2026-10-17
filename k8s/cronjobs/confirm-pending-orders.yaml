@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: findee-confirm-pending
+  name: findee-confirm-pending-orders
 spec:
   # Every 5 mins.
   schedule: "*/5 * * * *"
@@ -52,5 +52,7 @@ spec:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
                 runAsNonRoot: true
+                # Numeric UID lets kubelet verify non-root execution.
+                runAsUser: 100
                 capabilities:
                   drop: ["ALL"]
