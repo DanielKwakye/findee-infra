@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: findee-confirm-pending
+spec:
+  # Every 5 mins.
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 180
+      template:
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          containers:
+            - name: confirm-pending
+              image: curlimages/curl:8.12.1
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: findee-env
+                      key: CRON_SECRET
+              command: ["/bin/sh", "-ec"]
+              args:
+                - |
+                  test -n "$CRON_SECRET"
+                  status=$(curl --silent --show-error --fail \
+                    --connect-timeout 10 --max-time 60 \
+                    --request POST \
+                    --header "Authorization: Bearer ${CRON_SECRET}" \
+                    --output /dev/null --write-out '%{http_code}' \
+                    http://findee-service:3002/api/internal/orders/confirm-pending)
+                  echo "confirm-pending HTTP ${status}"
+                  case "$status" in
+                    2??) exit 0 ;;
+                    *) exit 1 ;;
+                  esac
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  cpu: 100m
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: ["ALL"]

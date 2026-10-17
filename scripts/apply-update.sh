@@ -14,6 +14,12 @@ if [ ! -r "$env_file" ]; then
   exit 1
 fi
 
+# Validate without printing or sourcing secret values.
+if ! awk '/^CRON_SECRET=./ { found=1 } END { exit !found }' "$env_file"; then
+  echo "CRON_SECRET must be non-empty in $env_file" >&2
+  exit 1
+fi
+
 namespace_manifest=$(kubectl create namespace findee --dry-run=client -o yaml)
 printf '%s\n' "$namespace_manifest" | kubectl apply -f -
 
@@ -35,4 +41,6 @@ kubectl rollout restart deployment/findee-deployment --namespace findee
 kubectl rollout status deployment/findee-deployment \
   --namespace findee --timeout=120s
 
-echo "Resources applied. Check status with: kubectl get deployments,pods,services,ingresses -n findee"
+kubectl apply --namespace findee -f "$infrastructure_dir/k8s/cronjobs/"
+
+echo "Resources applied. Check status with: kubectl get deployments,pods,services,ingresses,cronjobs -n findee"
