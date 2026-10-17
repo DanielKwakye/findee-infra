@@ -18,7 +18,7 @@ spec:
           restartPolicy: Never
           automountServiceAccountToken: false
           containers:
-            - name: confirm-pending
+            - name: confirm-pending-orders
               image: curlimages/curl:8.12.1
               env:
                 - name: CRON_SECRET
@@ -36,7 +36,7 @@ spec:
                     --header "Authorization: Bearer ${CRON_SECRET}" \
                     --output /dev/null --write-out '%{http_code}' \
                     http://findee-service:3002/api/internal/orders/confirm-pending)
-                  echo "confirm-pending HTTP ${status}"
+                  echo "confirm-pending-orders HTTP ${status}"
                   case "$status" in
                     2??) exit 0 ;;
                     *) exit 1 ;;

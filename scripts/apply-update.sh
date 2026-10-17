@@ -43,4 +43,7 @@ kubectl rollout status deployment/findee-deployment \
 
 kubectl apply --namespace findee -f "$infrastructure_dir/k8s/cronjobs/"
 
+# Remove the superseded CronJob and its owned Jobs/Pods after applying its replacement.
+kubectl delete cronjob findee-confirm-pending --namespace findee --ignore-not-found
+
 echo "Resources applied. Check status with: kubectl get deployments,pods,services,ingresses,cronjobs -n findee"
