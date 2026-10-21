@@ -46,4 +46,9 @@ kubectl apply --namespace findee -f "$infrastructure_dir/k8s/cronjobs/"
 # Remove the superseded CronJob and its owned Jobs/Pods after applying its replacement.
 kubectl delete cronjob findee-confirm-pending --namespace findee --ignore-not-found
 
+# Remove unused images across this K3s node after a successful deployment.
+if ! k3s crictl --timeout=120s rmi --prune; then
+  echo "Warning: image cleanup failed; deployment succeeded." >&2
+fi
+
 echo "Resources applied. Check status with: kubectl get deployments,pods,services,ingresses,cronjobs -n findee"
