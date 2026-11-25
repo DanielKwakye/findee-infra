@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: findee-container
-          image: danielkwakye1000/findee:v50
+          image: danielkwakye1000/findee:v51
           ports:
             - containerPort: 3002
 #          env:
